@@ -8,14 +8,14 @@ type Result<T> = std::result::Result<T, SpatiumError>;
 /// #Algorithmtype
 pub enum AlgorithmType {
     /// #Recursive algorith
-    RECURSIVE,
-    /// #Matrix algorith
-    MATRIX,
+    Recursive,
+    /// #Wagner-Fisher algorithm
+    WagnerFisher,
 }
 
 impl Default for AlgorithmType {
     fn default() -> Self {
-        AlgorithmType::MATRIX
+        AlgorithmType::WagnerFisher
     }
 }
 
@@ -39,8 +39,8 @@ impl Levenshtein {
         T: Eq,
     {
         let alg_function = match self.algorithm_type {
-            AlgorithmType::RECURSIVE => levenshtein_recursive,
-            AlgorithmType::MATRIX => levenshtein_matrix,
+            AlgorithmType::Recursive => levenshtein_recursive,
+            AlgorithmType::WagnerFisher => levenshtein_wagner_fisher,
         };
         alg_function(x, y)
     }
@@ -78,9 +78,10 @@ where
     ))
 }
 
-/// #Levenshtein matrix algorithm
+/// #Levenshtein Wagner-Fisher algorithm
 ///
-pub fn levenshtein_matrix<T>(x: &[T], y: &[T]) -> Result<u64>
+/// [Wagner-Fisher] (https://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_algorithm)
+pub fn levenshtein_wagner_fisher<T>(x: &[T], y: &[T]) -> Result<u64>
 where
     T: Eq,
 {
@@ -122,8 +123,8 @@ where
 #[cfg(test)]
 mod tests {
 
-    use super::levenshtein_matrix;
     use super::levenshtein_recursive;
+    use super::levenshtein_wagner_fisher;
     use super::AlgorithmType;
     use super::Levenshtein;
 
@@ -146,11 +147,11 @@ mod tests {
     recursive_substitution: (levenshtein_recursive, &[1], &[2], 1),
     recursive_case1: (levenshtein_recursive, &[1, 5, 3], &[4, 5,6,7], 3),
 
-    matrix_eq: (levenshtein_matrix, &[1], &[1], 0),
-    matrix_deletion: (levenshtein_matrix, &[1], &[], 1),
-    matrix_insertion: (levenshtein_matrix, &[0], &[1], 1),
-    matrix_substitution: (levenshtein_matrix, &[1], &[2], 1),
-    matrix_case1: (levenshtein_matrix, &[1, 5, 3], &[4, 5, 6, 7], 3),
+    wagner_fisher_eq: (levenshtein_wagner_fisher, &[1], &[1], 0),
+    wagner_fisher_deletion: (levenshtein_wagner_fisher, &[1], &[], 1),
+    wagner_fisher_insertion: (levenshtein_wagner_fisher, &[0], &[1], 1),
+    wagner_fisher_substitution: (levenshtein_wagner_fisher, &[1], &[2], 1),
+    wagner_fisher_case1: (levenshtein_wagner_fisher, &[1, 5, 3], &[4, 5, 6, 7], 3),
     }
 
     #[test]
@@ -164,7 +165,7 @@ mod tests {
 
     #[test]
     fn recusive() {
-        let alg = Levenshtein::new(AlgorithmType::RECURSIVE);
+        let alg = Levenshtein::new(AlgorithmType::Recursive);
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
@@ -172,8 +173,8 @@ mod tests {
     }
 
     #[test]
-    fn matrix() {
-        let alg = Levenshtein::new(AlgorithmType::MATRIX);
+    fn wagner_fisher() {
+        let alg = Levenshtein::new(AlgorithmType::WagnerFisher);
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
