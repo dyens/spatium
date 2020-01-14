@@ -23,7 +23,7 @@ impl Default for AlgorithmType {
 #[derive(Default)]
 pub struct Levenshtein {
     /// Type of algorithm
-    pub algorithm_type: AlgorithmType,
+    algorithm_type: AlgorithmType,
 }
 
 impl Levenshtein {
@@ -128,7 +128,7 @@ mod tests {
     use super::AlgorithmType;
     use super::Levenshtein;
 
-    macro_rules! levenshtein_recursive {
+    macro_rules! levenshtein {
 	($($name:ident: $value:expr,)*) => {
 	$(
 	    #[test]
@@ -140,12 +140,12 @@ mod tests {
 	}
     }
 
-    levenshtein_recursive! {
+    levenshtein! {
     recursive_eq: (levenshtein_recursive, &[1], &[1], 0),
     recursive_deletion: (levenshtein_recursive, &[1], &[], 1),
     recursive_insertion: (levenshtein_recursive, &[0], &[1], 1),
     recursive_substitution: (levenshtein_recursive, &[1], &[2], 1),
-    recursive_case1: (levenshtein_recursive, &[1, 5, 3], &[4, 5,6,7], 3),
+    recursive_case1: (levenshtein_recursive, &[1, 5, 3], &[4, 5, 6, 7], 3),
 
     wagner_fisher_eq: (levenshtein_wagner_fisher, &[1], &[1], 0),
     wagner_fisher_deletion: (levenshtein_wagner_fisher, &[1], &[], 1),
