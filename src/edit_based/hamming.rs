@@ -5,12 +5,30 @@ const DIFFERENT_LENGTHS: &str = "Arguments have different lengths.";
 
 type Result<T> = std::result::Result<T, SpatiumError>;
 
-/// Hamming distance
+/// # Hamming distance
 
 /// The [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance) between two strings of equal length is the number of positions at
 /// which two strings are different.
 /// This returns an error of type error::SpatiumError::ValueError if the string arguments do not have equal length.
 ///
+#[derive(Default)]
+pub struct Hamming {}
+
+impl Hamming {
+    /// #New object for calc distance
+    pub fn new() -> Self {
+        Self {}
+    }
+    /// #Distance between sequences
+    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<u64>
+    where
+        T: Eq,
+    {
+        hamming(x, y)
+    }
+}
+
+/// # Hamming distance
 /// ## Examples
 /// ```
 /// use spatium::edit_based::hamming::hamming;
@@ -54,6 +72,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::hamming;
+    use super::Hamming;
 
     #[test]
     fn error_text() {
@@ -80,6 +99,15 @@ mod tests {
         let xc = x.chars().collect::<Vec<char>>();
         let yc = y.chars().collect::<Vec<char>>();
         let distance = hamming(&xc, &yc).unwrap();
+        assert_eq!(distance, 1);
+    }
+
+    #[test]
+    fn default() {
+        let alg = Hamming::default();
+        let x = [1, 2, 3];
+        let y = [1, 2, 4];
+        let distance = alg.distance(&x, &y).unwrap();
         assert_eq!(distance, 1);
     }
 }

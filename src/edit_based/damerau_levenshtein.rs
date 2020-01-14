@@ -6,26 +6,28 @@ use std::cmp::min;
 type Result<T> = std::result::Result<T, SpatiumError>;
 
 // TODO: Adjacment distance???
-/// #Damerau-Levenshtein algorithm
+
+/// # Damerau-Levenshtein algorithm
 ///
-/// [Damerau-Levenshtein distance] (https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance)
+/// The [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance)
 ///
 /// The Damerau-Levenshtein distance is the minimum number of edit
 /// operations necessary for transforming one sequence into the other.
 /// The edit operations allowed are:
-///     * deletion:      ABC -> BC, AC, AB
-///     * insertion:     ABC -> ABCD, EABC, AEBC..
-///     * substitution:  ABC -> ABE, ADC, FBC..
-///     * transposition: ABC -> ACB, BAC
+///
+///     - deletion:      ABC -> BC, AC, AB
+///     - insertion:     ABC -> ABCD, EABC, AEBC..
+///     - substitution:  ABC -> ABE, ADC, FBC..
+///     - transposition: ABC -> ACB, BAC
 #[derive(Default)]
 pub struct DamerauLevenshtein {}
 
 impl DamerauLevenshtein {
-    /// #New object for calc distance
+    /// # New object for calc distance
     pub fn new() -> Self {
         Self {}
     }
-    /// #Distance between sequences
+    /// # Distance between sequences
     pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<u64>
     where
         T: Eq,
@@ -34,7 +36,7 @@ impl DamerauLevenshtein {
     }
 }
 
-/// #Damerau Levenshtein distance
+/// # Damerau Levenshtein distance
 pub fn damerau_levenshtein<T>(x: &[T], y: &[T]) -> Result<u64>
 where
     T: Eq,

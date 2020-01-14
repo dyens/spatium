@@ -6,6 +6,8 @@
 //!
 //! ### Edit based:
 //! - [Hamming](edit_based::hamming::Hamming)
+//! - [Levenshtein](edit_based::levenshtein::Levenshtein)
+//! - [Damerau-Levenshtein](edit_based::damerau_levenshtein::DamerauLevenshtein)
 
 /// # Edit Based algorithms
 pub mod edit_based;
