@@ -5,30 +5,36 @@ use std::cmp::min;
 
 type Result<T> = std::result::Result<T, SpatiumError>;
 
-// TODO: Adjacment distance???
-
 /// # Damerau-Levenshtein algorithm
 ///
-/// The [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance)
-///
-/// The Damerau-Levenshtein distance is the minimum number of edit
+/// The [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) distance is the minimum number of edit
 /// operations necessary for transforming one sequence into the other.
 /// The edit operations allowed are:
 ///
-///     - deletion:      ABC -> BC, AC, AB
-///     - insertion:     ABC -> ABCD, EABC, AEBC..
-///     - substitution:  ABC -> ABE, ADC, FBC..
-///     - transposition: ABC -> ACB, BAC
+/// 1. deletion:      ABC -> BC, AC, AB
+/// 2. insertion:     ABC -> ABCD, EABC, AEBC..
+/// 3. substitution:  ABC -> ABE, ADC, FBC..
+/// 4. transposition: ABC -> ACB, BAC
+///
+/// # References:
+/// - [Wikipedia](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance)
+///
+/// ## Some implementation
+/// - [python](https://github.com/chrislit/abydos/blob/master/abydos/distance/_damerau_levenshtein.py)
+/// - [C#](http://blog.softwx.net/2015/01/optimizing-damerau-levenshtein_15.html)
+/// - [js](https://github.com/Yomguithereal/talisman/blob/master/src/metrics/distance/damerau-levenshtein.js)
+/// - [Java](https://github.com/KevinStern/software-and-algorithms/blob/master/src/main/java/blogspot/software_and_algorithms/stern_library/string/DamerauLevenshteinAlgorithm.java)
+
 #[derive(Default)]
 pub struct DamerauLevenshtein {}
 
 impl DamerauLevenshtein {
-    /// # New object for calc distance
+    /// New object for calc distance
     pub fn new() -> Self {
         Self {}
     }
-    /// # Distance between sequences
-    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<u64>
+    /// Distance between sequences
+    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
         T: Eq,
     {
@@ -36,8 +42,8 @@ impl DamerauLevenshtein {
     }
 }
 
-/// # Damerau Levenshtein distance
-pub fn damerau_levenshtein<T>(x: &[T], y: &[T]) -> Result<u64>
+/// Damerau Levenshtein distance
+fn damerau_levenshtein<T>(x: &[T], y: &[T]) -> Result<f64>
 where
     T: Eq,
 {
@@ -79,7 +85,7 @@ where
         }
     }
 
-    Ok(matrix[y_len][x_len] as u64)
+    Ok(matrix[y_len][x_len] as f64)
 }
 
 #[cfg(test)]
@@ -101,13 +107,12 @@ mod tests {
     }
 
     damerau_levenshtein! {
-    eq: (damerau_levenshtein, &[1], &[1], 0),
-    deletion: (damerau_levenshtein, &[1], &[], 1),
-    insertion: (damerau_levenshtein, &[0], &[1], 1),
-    substitution: (damerau_levenshtein, &[1], &[2], 1),
-    transposition: (damerau_levenshtein, &[1, 2, 3], &[1, 3, 2], 1),
-    case1: (damerau_levenshtein, &[1, 5, 3], &[4, 5, 6, 7], 3),
-
+    eq: (damerau_levenshtein, &[1], &[1], 0.0),
+    deletion: (damerau_levenshtein, &[1], &[], 1.0),
+    insertion: (damerau_levenshtein, &[0], &[1], 1.0),
+    substitution: (damerau_levenshtein, &[1], &[2], 1.0),
+    transposition: (damerau_levenshtein, &[1, 2, 3], &[1, 3, 2], 1.0),
+    case1: (damerau_levenshtein, &[1, 5, 3], &[4, 5, 6, 7], 3.0),
     }
 
     #[test]
@@ -116,6 +121,6 @@ mod tests {
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
-        assert_eq!(distance, 3);
+        assert_eq!(distance, 3.0);
     }
 }
