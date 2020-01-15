@@ -5,11 +5,11 @@ use std::cmp::min;
 
 type Result<T> = std::result::Result<T, SpatiumError>;
 
-/// #Algorithmtype
+/// Algorithmtype
 pub enum AlgorithmType {
-    /// #Recursive algorith
+    /// Recursive algorith
     Recursive,
-    /// #Wagner-Fisher algorithm
+    /// Wagner-Fisher algorithm
     WagnerFisher,
 }
 
@@ -19,7 +19,7 @@ impl Default for AlgorithmType {
     }
 }
 
-/// #Levenshtein algorithm
+/// # Levenshtein algorithm
 #[derive(Default)]
 pub struct Levenshtein {
     /// Type of algorithm
@@ -27,14 +27,14 @@ pub struct Levenshtein {
 }
 
 impl Levenshtein {
-    /// #New object for calc distance
+    /// # New object for calc distance
     pub fn new(alg_type: AlgorithmType) -> Self {
         Self {
             algorithm_type: alg_type,
         }
     }
-    /// #Distance between sequences
-    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<u64>
+    /// # Distance between sequences
+    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
         T: Eq,
     {
@@ -46,22 +46,22 @@ impl Levenshtein {
     }
 }
 
-/// #Levenshtein recursive algorithm
+/// # Levenshtein recursive algorithm
 ///
 /// Dont use it in real live!
 /// This is a straightforward, but inefficient, recursive
 /// implementation of a Levenshtein distance.
-pub fn levenshtein_recursive<T>(x: &[T], y: &[T]) -> Result<u64>
+pub fn levenshtein_recursive<T>(x: &[T], y: &[T]) -> Result<f64>
 where
     T: Eq,
 {
     let x_len = x.len();
     let y_len = y.len();
     if x_len == 0 {
-        return Ok(y_len as u64);
+        return Ok(y_len as f64);
     }
     if y_len == 0 {
-        return Ok(x_len as u64);
+        return Ok(x_len as f64);
     }
 
     let mut cost = 1;
@@ -71,17 +71,17 @@ where
 
     Ok(min(
         min(
-            levenshtein_recursive(&x[..x_len - 1], &y).unwrap() + 1,
-            levenshtein_recursive(&x, &y[..y_len - 1]).unwrap() + 1,
+            levenshtein_recursive(&x[..x_len - 1], &y).unwrap() as u32 + 1,
+            levenshtein_recursive(&x, &y[..y_len - 1]).unwrap() as u32 + 1,
         ),
-        levenshtein_recursive(&x[..x_len - 1], &y[..y_len - 1]).unwrap() + cost,
-    ))
+        levenshtein_recursive(&x[..x_len - 1], &y[..y_len - 1]).unwrap() as u32 + cost,
+    ) as f64)
 }
 
-/// #Levenshtein Wagner-Fisher algorithm
+/// # Levenshtein Wagner-Fisher algorithm
 ///
 /// [Wagner-Fisher] (https://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_algorithm)
-pub fn levenshtein_wagner_fisher<T>(x: &[T], y: &[T]) -> Result<u64>
+pub fn levenshtein_wagner_fisher<T>(x: &[T], y: &[T]) -> Result<f64>
 where
     T: Eq,
 {
@@ -117,7 +117,7 @@ where
             );
         }
     }
-    Ok(matrix[y_len][x_len] as u64)
+    Ok(matrix[y_len][x_len] as f64)
 }
 
 #[cfg(test)]
@@ -141,17 +141,17 @@ mod tests {
     }
 
     levenshtein! {
-    recursive_eq: (levenshtein_recursive, &[1], &[1], 0),
-    recursive_deletion: (levenshtein_recursive, &[1], &[], 1),
-    recursive_insertion: (levenshtein_recursive, &[0], &[1], 1),
-    recursive_substitution: (levenshtein_recursive, &[1], &[2], 1),
-    recursive_case1: (levenshtein_recursive, &[1, 5, 3], &[4, 5, 6, 7], 3),
+    recursive_eq: (levenshtein_recursive, &[1], &[1], 0.0),
+    recursive_deletion: (levenshtein_recursive, &[1], &[], 1.0),
+    recursive_insertion: (levenshtein_recursive, &[0], &[1], 1.0),
+    recursive_substitution: (levenshtein_recursive, &[1], &[2], 1.0),
+    recursive_case1: (levenshtein_recursive, &[1, 5, 3], &[4, 5, 6, 7], 3.0),
 
-    wagner_fisher_eq: (levenshtein_wagner_fisher, &[1], &[1], 0),
-    wagner_fisher_deletion: (levenshtein_wagner_fisher, &[1], &[], 1),
-    wagner_fisher_insertion: (levenshtein_wagner_fisher, &[0], &[1], 1),
-    wagner_fisher_substitution: (levenshtein_wagner_fisher, &[1], &[2], 1),
-    wagner_fisher_case1: (levenshtein_wagner_fisher, &[1, 5, 3], &[4, 5, 6, 7], 3),
+    wagner_fisher_eq: (levenshtein_wagner_fisher, &[1], &[1], 0.0),
+    wagner_fisher_deletion: (levenshtein_wagner_fisher, &[1], &[], 1.0),
+    wagner_fisher_insertion: (levenshtein_wagner_fisher, &[0], &[1], 1.0),
+    wagner_fisher_substitution: (levenshtein_wagner_fisher, &[1], &[2], 1.0),
+    wagner_fisher_case1: (levenshtein_wagner_fisher, &[1, 5, 3], &[4, 5, 6, 7], 3.0),
     }
 
     #[test]
@@ -160,7 +160,7 @@ mod tests {
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
-        assert_eq!(distance, 3);
+        assert_eq!(distance, 3.0);
     }
 
     #[test]
@@ -169,7 +169,7 @@ mod tests {
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
-        assert_eq!(distance, 3);
+        assert_eq!(distance, 3.0);
     }
 
     #[test]
@@ -178,6 +178,6 @@ mod tests {
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
-        assert_eq!(distance, 3);
+        assert_eq!(distance, 3.0);
     }
 }
