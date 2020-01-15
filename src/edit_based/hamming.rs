@@ -1,4 +1,5 @@
 use crate::error::SpatiumError;
+use crate::normalize::normalize;
 use std::cmp::Eq;
 
 const DIFFERENT_LENGTHS: &str = "Arguments have different lengths.";
@@ -6,64 +7,80 @@ const DIFFERENT_LENGTHS: &str = "Arguments have different lengths.";
 type Result<T> = std::result::Result<T, SpatiumError>;
 
 /// # Hamming distance
-
+///
 /// The [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance) between two strings of equal length is the number of positions at
 /// which two strings are different.
-/// This returns an error of type error::SpatiumError::ValueError if the string arguments do not have equal length.
 ///
+/// ## Examples
+/// ```
+/// use spatium::edit_based::hamming::Hamming;
+///
+/// let alg = Hamming::default();
+/// let x = [1, 2, 3];
+/// let y = [1, 2, 4];
+/// let distance = alg.distance(&x, &y).unwrap();
+/// assert_eq!(distance, 1.0);
+///
+/// // On &str.
+/// let x = "Hello-МИР";
+/// let y = "Hello-ПИР";
+/// let xc = x.chars().collect::<Vec<char>>();
+/// let yc = y.chars().collect::<Vec<char>>();
+/// let distance = alg.distance(&xc, &yc).unwrap();
+/// assert_eq!(distance, 1.0);
+///
+/// // With normaliztion (normalized distance = distance / x.len())
+/// let alg = Hamming::new(true);
+/// let x = [1, 2, 3];
+/// let y = [1, 2, 4];
+/// let distance = alg.distance(&x, &y).unwrap();
+/// assert_eq!(distance, 1.0 / 3.0);
+/// ```
+/// # References:
+/// - [Wikipedia](https://en.wikipedia.org/wiki/Hamming_distance)
+///
+/// ## Some implementation
+/// - [python](https://github.com/chrislit/abydos/blob/master/abydos/distance/_hamming.py)
 #[derive(Default)]
-pub struct Hamming {}
+pub struct Hamming {
+    // Default for bool is false, so its ok.
+    normalized: bool,
+}
 
 impl Hamming {
-    /// #New object for calc distance
-    pub fn new() -> Self {
-        Self {}
+    /// New object for calc distance
+    pub fn new(normalized: bool) -> Self {
+        Self {
+            normalized: normalized,
+        }
     }
-    /// #Distance between sequences
-    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<u64>
+
+    /// Distance between sequences
+    ///
+    /// This function returns an error type [ValueError][crate::error::SpatiumError::ValueError] if the string arguments do not have equal length.
+    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
         T: Eq,
     {
-        hamming(x, y)
+        let distance = hamming(x, y);
+        match self.normalized {
+            false => distance,
+            true => distance.and_then(|dis| normalize(dis, x.len(), y.len())),
+        }
     }
 }
 
-/// # Hamming distance
-/// ## Examples
-/// ```
-/// use spatium::edit_based::hamming::hamming;
-///
-/// // On slices [T: Eq].
-/// let x = [1, 2, 3];
-/// let y = [1, 2, 4];
-/// let distance = hamming(&x, &y).unwrap();
-/// assert_eq!(distance, 1);
-///
-/// // On Vec<T: Eq>.
-/// let x = vec![1, 2, 3];
-/// let y = vec![1, 2, 4];
-/// let distance = hamming(&x, &y).unwrap();
-/// assert_eq!(distance, 1);
-///
-/// // On &str.
-/// let x = "Привет";
-/// let y = "Привёт";
-/// let xc = x.chars().collect::<Vec<char>>();
-/// let yc = y.chars().collect::<Vec<char>>();
-/// let distance = hamming(&xc, &yc).unwrap();
-/// assert_eq!(distance, 1);
-/// ```
-pub fn hamming<T>(x: &[T], y: &[T]) -> Result<u64>
+fn hamming<T>(x: &[T], y: &[T]) -> Result<f64>
 where
     T: Eq,
 {
     if x.len() != y.len() {
         return Err(SpatiumError::ValueError(String::from(DIFFERENT_LENGTHS)));
     }
-    let mut distance = 0;
+    let mut distance: f64 = 0.0;
     for (x_el, y_el) in x.into_iter().zip(y.iter()) {
         if x_el != y_el {
-            distance += 1;
+            distance += 1.0;
         }
     }
     Ok(distance)
@@ -89,7 +106,7 @@ mod tests {
         let x = [1, 2, 3];
         let y = [1, 2, 4];
         let distance = hamming(&x, &y).unwrap();
-        assert_eq!(distance, 1);
+        assert_eq!(distance, 1.0);
     }
 
     #[test]
@@ -99,7 +116,7 @@ mod tests {
         let xc = x.chars().collect::<Vec<char>>();
         let yc = y.chars().collect::<Vec<char>>();
         let distance = hamming(&xc, &yc).unwrap();
-        assert_eq!(distance, 1);
+        assert_eq!(distance, 1.0);
     }
 
     #[test]
@@ -108,6 +125,15 @@ mod tests {
         let x = [1, 2, 3];
         let y = [1, 2, 4];
         let distance = alg.distance(&x, &y).unwrap();
-        assert_eq!(distance, 1);
+        assert_eq!(distance, 1.0);
+    }
+
+    #[test]
+    fn normalized() {
+        let alg = Hamming::new(true);
+        let x = [1, 2, 3];
+        let y = [1, 2, 4];
+        let distance = alg.distance(&x, &y).unwrap();
+        assert_eq!(distance, 1.0 / 3.0);
     }
 }
