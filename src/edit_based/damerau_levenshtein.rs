@@ -17,6 +17,32 @@ type Result<T> = std::result::Result<T, SpatiumError>;
 /// 3. substitution:  ABC -> ABE, ADC, FBC..
 /// 4. transposition: ABC -> ACB, BAC
 ///
+/// ## Examples
+/// ```
+/// use spatium::edit_based::damerau_levenshtein::DamerauLevenshtein;
+///
+/// let alg = DamerauLevenshtein::default();
+/// let x = [1, 2, 3];
+/// let y = [1, 2, 4];
+/// let distance = alg.distance(&x, &y).unwrap();
+/// assert_eq!(distance, 1.0);
+///
+/// // On &str.
+/// let x = "Hello-МИР";
+/// let y = "Hello-ПИР";
+/// let xc = x.chars().collect::<Vec<char>>();
+/// let yc = y.chars().collect::<Vec<char>>();
+/// let distance = alg.distance(&xc, &yc).unwrap();
+/// assert_eq!(distance, 1.0);
+///
+/// // With normaliztion (normalized distance = distance / x.len())
+/// let alg = DamerauLevenshtein::default().normalize_result(true);
+/// let x = [1, 2, 3];
+/// let y = [1, 2, 4];
+/// let distance = alg.distance(&x, &y).unwrap();
+/// assert_eq!(distance, 1.0 / 3.0);
+/// ```
+
 /// # References:
 /// - [Wikipedia](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance)
 ///
