@@ -30,7 +30,7 @@ type Result<T> = std::result::Result<T, SpatiumError>;
 /// assert_eq!(distance, 1.0);
 ///
 /// // With normaliztion (normalized distance = distance / x.len())
-/// let alg = Hamming::new(true);
+/// let alg = Hamming::default().normalize_result(true);
 /// let x = [1, 2, 3];
 /// let y = [1, 2, 4];
 /// let distance = alg.distance(&x, &y).unwrap();
@@ -41,23 +41,28 @@ type Result<T> = std::result::Result<T, SpatiumError>;
 ///
 /// ## Some implementation
 /// - [python](https://github.com/chrislit/abydos/blob/master/abydos/distance/_hamming.py)
+
 #[derive(Default)]
 pub struct Hamming {
-    // Default for bool is false, so its ok.
+    /// Is result should be normalized?
     normalized: bool,
 }
 
 impl Hamming {
     /// New object for calc distance
-    pub fn new(normalized: bool) -> Self {
-        Self {
-            normalized: normalized,
-        }
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Calc normailzed distance.
+    /// The distance is normalized by dividing it
+    /// by the lenght of sequence.
+    pub fn normalize_result(mut self, normalized: bool) -> Self {
+        self.normalized = normalized;
+        self
     }
 
     /// Distance between sequences
-    ///
-    /// This function returns an error type [ValueError][crate::error::SpatiumError::ValueError] if the string arguments do not have equal length.
     pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
         T: Eq,
@@ -129,8 +134,8 @@ mod tests {
     }
 
     #[test]
-    fn normalized() {
-        let alg = Hamming::new(true);
+    fn normalize_result() {
+        let alg = Hamming::new().normalize_result(true);
         let x = [1, 2, 3];
         let y = [1, 2, 4];
         let distance = alg.distance(&x, &y).unwrap();
