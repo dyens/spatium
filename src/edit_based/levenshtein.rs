@@ -1,4 +1,5 @@
 use crate::error::SpatiumError;
+use crate::normalize::normalize;
 use std::cmp::Eq;
 
 use std::cmp::min;
@@ -7,9 +8,11 @@ type Result<T> = std::result::Result<T, SpatiumError>;
 
 /// Algorithmtype
 pub enum AlgorithmType {
-    /// Recursive algorith
+    /// Recursive algorith.
+    /// Don't use this in real applications.
     Recursive,
-    /// Wagner-Fisher algorithm
+    /// Wagner-Fisher algorithm.
+    /// This is simple matrix algorithm from.
     WagnerFisher,
 }
 
@@ -19,20 +22,81 @@ impl Default for AlgorithmType {
     }
 }
 
-/// # Levenshtein algorithm
+/// # Levenshtein distance
+///
+/// The [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) between two strings
+/// In simple case number of operations for transforming one sequence to another.
+/// The edit operations allowed are:
+///
+/// 1. deletion:      ABC -> BC, AC, AB
+/// 2. insertion:     ABC -> ABCD, EABC, AEBC..
+/// 3. substitution:  ABC -> ABE, ADC, FBC..
+///
+/// ## Examples
+/// ```
+/// use spatium::edit_based::levenshtein::Levenshtein;
+///
+/// let alg = Levenshtein::default();
+/// let x = [1, 2, 3];
+/// let y = [1, 2, 4];
+/// let distance = alg.distance(&x, &y).unwrap();
+/// assert_eq!(distance, 1.0);
+///
+/// // On &str.
+/// let x = "Hello-МИР";
+/// let y = "Hello-ПИР";
+/// let xc = x.chars().collect::<Vec<char>>();
+/// let yc = y.chars().collect::<Vec<char>>();
+/// let distance = alg.distance(&xc, &yc).unwrap();
+/// assert_eq!(distance, 1.0);
+///
+/// // With normaliztion (normalized distance = distance / x.len())
+/// let alg = Levenshtein::default().normalize_result(true);
+/// let x = [1, 2, 3];
+/// let y = [1, 2, 4];
+/// let distance = alg.distance(&x, &y).unwrap();
+/// assert_eq!(distance, 1.0 / 3.0);
+///
+/// // Use recursive algorithm
+///
+/// use spatium::edit_based::levenshtein::AlgorithmType;
+///
+/// let alg = Levenshtein::new(AlgorithmType::Recursive);
+/// let x = [1, 2, 3];
+/// let y = [1, 2, 4];
+/// let distance = alg.distance(&x, &y).unwrap();
+/// assert_eq!(distance, 1.0);
+/// ```
+/// # References:
+/// - [Wikipedia](https://en.wikipedia.org/wiki/Levenshtein_distance)
+///
+/// ## Some implementation
+/// - [python](https://github.com/chrislit/abydos/blob/master/abydos/distance/_levenshtein.py)
+
 #[derive(Default)]
 pub struct Levenshtein {
     /// Type of algorithm
     algorithm_type: AlgorithmType,
+    /// Is result should be normalized?
+    normalized: bool,
 }
 
 impl Levenshtein {
     /// # New object for calc distance
     pub fn new(alg_type: AlgorithmType) -> Self {
-        Self {
-            algorithm_type: alg_type,
-        }
+        let mut new_alg = Self::default();
+        new_alg.algorithm_type = alg_type;
+        new_alg
     }
+
+    /// Calc normailzed distance.
+    /// The distance is normalized by dividing it
+    /// by the lenght of sequence.
+    pub fn normalize_result(mut self, normalized: bool) -> Self {
+        self.normalized = normalized;
+        self
+    }
+
     /// # Distance between sequences
     pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
@@ -42,7 +106,11 @@ impl Levenshtein {
             AlgorithmType::Recursive => levenshtein_recursive,
             AlgorithmType::WagnerFisher => levenshtein_wagner_fisher,
         };
-        alg_function(x, y)
+        let distance = alg_function(x, y);
+        match self.normalized {
+            false => distance,
+            true => distance.and_then(|dis| normalize(dis, x.len(), y.len())),
+        }
     }
 }
 
@@ -161,6 +229,15 @@ mod tests {
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
         assert_eq!(distance, 3.0);
+    }
+
+    #[test]
+    fn normalize_result() {
+        let alg = Levenshtein::default().normalize_result(true);
+        let x = [1, 5, 3];
+        let y = [4, 5, 6, 7];
+        let distance = alg.distance(&x, &y).unwrap();
+        assert_eq!(distance, 3.0 / 4.0);
     }
 
     #[test]
