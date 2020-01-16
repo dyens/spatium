@@ -1,4 +1,5 @@
 use crate::error::SpatiumError;
+use crate::normalize::normalize;
 use std::cmp::Eq;
 
 use std::cmp::min;
@@ -26,19 +27,35 @@ type Result<T> = std::result::Result<T, SpatiumError>;
 /// - [Java](https://github.com/KevinStern/software-and-algorithms/blob/master/src/main/java/blogspot/software_and_algorithms/stern_library/string/DamerauLevenshteinAlgorithm.java)
 
 #[derive(Default)]
-pub struct DamerauLevenshtein {}
+pub struct DamerauLevenshtein {
+    /// Is result should be normalized?
+    normalized: bool,
+}
 
 impl DamerauLevenshtein {
     /// New object for calc distance
     pub fn new() -> Self {
-        Self {}
+        Self::default()
     }
+
+    /// Calc normailzed distance.
+    /// The distance is normalized by dividing it
+    /// by the lenght of sequence.
+    pub fn normalize_result(mut self, normalized: bool) -> Self {
+        self.normalized = normalized;
+        self
+    }
+
     /// Distance between sequences
     pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
         T: Eq,
     {
-        damerau_levenshtein(x, y)
+        let distance = damerau_levenshtein(x, y);
+        match self.normalized {
+            false => distance,
+            true => distance.and_then(|dis| normalize(dis, x.len(), y.len())),
+        }
     }
 }
 
@@ -122,5 +139,14 @@ mod tests {
         let y = [4, 5, 6, 7];
         let distance = alg.distance(&x, &y).unwrap();
         assert_eq!(distance, 3.0);
+    }
+
+    #[test]
+    fn normalize_result() {
+        let alg = DamerauLevenshtein::default().normalize_result(true);
+        let x = [1, 5, 3];
+        let y = [4, 5, 6, 7];
+        let distance = alg.distance(&x, &y).unwrap();
+        assert_eq!(distance, 3.0 / 4.0);
     }
 }
