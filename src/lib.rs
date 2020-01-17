@@ -5,7 +5,7 @@
 //! ## Algorithms:
 //!
 //! ### Edit based:
-//! - [Hamming](edit_based::hamming::Hamming)
+//! - [Hamming](edit_based::hamming)
 //! - [Levenshtein](edit_based::levenshtein)
 //! - [Damerau-Levenshtein](edit_based::damerau_levenshtein::DamerauLevenshtein)
 //!
