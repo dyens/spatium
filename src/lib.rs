@@ -6,7 +6,7 @@
 //!
 //! ### Edit based:
 //! - [Hamming](edit_based::hamming::Hamming)
-//! - [Levenshtein](edit_based::levenshtein::Levenshtein)
+//! - [Levenshtein](edit_based::levenshtein)
 //! - [Damerau-Levenshtein](edit_based::damerau_levenshtein::DamerauLevenshtein)
 //!
 //! # References:
