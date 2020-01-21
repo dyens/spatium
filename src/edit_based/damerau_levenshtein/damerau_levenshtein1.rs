@@ -1,5 +1,5 @@
+use crate::distance::Distance;
 use crate::error::SpatiumError;
-use crate::normalize::normalize;
 use std::cmp::Eq;
 
 use std::cmp::min;
@@ -7,19 +7,16 @@ use std::cmp::min;
 type Result<T> = std::result::Result<T, SpatiumError>;
 
 /// Simple matrix implementation [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) distance
-pub struct DamerauLevenshtein1 {
-    /// Is result should be normalized?
-    normalized: bool,
-}
+pub struct DamerauLevenshtein1 {}
 
 impl Default for DamerauLevenshtein1 {
     fn default() -> Self {
-        Self { normalized: false }
+        Self {}
     }
 }
 
-impl DamerauLevenshtein1 {
-    fn calc_distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
+impl Distance for DamerauLevenshtein1 {
+    fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
         T: Eq,
     {
@@ -62,34 +59,13 @@ impl DamerauLevenshtein1 {
 
         Ok(matrix[y_len][x_len] as f64)
     }
-
-    /// Set normalization parameter
-    ///
-    /// If normailzed is True,
-    /// the distance is normalized by dividing it
-    pub fn normalize_result(mut self, normalized: bool) -> Self {
-        self.normalized = normalized;
-        self
-    }
-
-    /// Distance between sequences
-    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
-    where
-        T: Eq,
-    {
-        let distance = self.calc_distance(x, y);
-        if self.normalized {
-            distance.and_then(|dis| normalize(dis, x.len(), y.len()))
-        } else {
-            distance
-        }
-    }
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::DamerauLevenshtein1;
+    use crate::distance::Distance;
 
     macro_rules! check_params{
 	($($name:ident: $value:expr,)*) => {
@@ -114,10 +90,11 @@ mod tests {
 
     #[test]
     fn normalize_result() {
-        let alg = DamerauLevenshtein1::default().normalize_result(true);
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
-        let distance = alg.distance(&x, &y).unwrap();
+        let distance = DamerauLevenshtein1::default()
+            .normalized_distance(&x, &y)
+            .unwrap();
         assert_eq!(distance, 3.0 / 4.0);
     }
 }
