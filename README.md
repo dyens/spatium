@@ -4,6 +4,15 @@
 
 [![Build Status](https://travis-ci.com/dyens/spatium.svg?branch=master)](https://travis-ci.com/dyens/spatium)
 
+Spatium -- library for comparing distance between sequences.
+
+# Algorithms
+
+## Edit based
+
+- [Hamming](https://en.wikipedia.org/wiki/Hamming_distance)
+- [Levenshtein](https://en.wikipedia.org/wiki/Levenshtein_distance)
+- [Damerau-Levenshtein](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance)
 
 # License
 
