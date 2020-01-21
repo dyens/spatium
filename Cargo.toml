@@ -12,7 +12,7 @@ keywords = ["spatium"]
 categories = ["algorithms"]
 repository = "https://github.com/dyens/spatium"
 homepage = "https://github.com/dyens/spatium"
-# TODO add documentation link
+documentation = "https://docs.rs/spatium"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
