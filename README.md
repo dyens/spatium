@@ -2,6 +2,7 @@
 
 ![Spatium logo](logo.png)
 
+[![Crates.io](https://img.shields.io/crates/v/spatium.svg)](https://crates.io/crates/spatium)
 [![Build Status](https://travis-ci.com/dyens/spatium.svg?branch=master)](https://travis-ci.com/dyens/spatium)
 
 Spatium -- library for comparing distance between sequences.
