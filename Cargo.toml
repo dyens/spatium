@@ -10,6 +10,9 @@ Spatium. Calc distance between sequences.
 """
 keywords = ["spatium"]
 categories = ["algorithms"]
+repository = "https://github.com/dyens/spatium"
+homepage = "https://github.com/dyens/spatium"
+# TODO add documentation link
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
