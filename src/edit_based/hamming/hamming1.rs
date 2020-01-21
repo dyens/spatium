@@ -27,7 +27,7 @@ impl Hamming1 {
             return Err(SpatiumError::ValueError(String::from(DIFFERENT_LENGTHS)));
         }
         let mut distance: f64 = 0.0;
-        for (x_el, y_el) in x.into_iter().zip(y.iter()) {
+        for (x_el, y_el) in x.iter().zip(y.iter()) {
             if x_el != y_el {
                 distance += 1.0;
             }
@@ -50,9 +50,11 @@ impl Hamming1 {
         T: Eq,
     {
         let distance = self.calc_distance(x, y);
-        match self.normalized {
-            false => distance,
-            true => distance.and_then(|dis| normalize(dis, x.len(), y.len())),
+
+        if self.normalized {
+            distance.and_then(|dis| normalize(dis, x.len(), y.len()))
+        } else {
+            distance
         }
     }
 }

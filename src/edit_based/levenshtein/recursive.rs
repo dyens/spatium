@@ -36,10 +36,7 @@ impl Recursive {
             return Ok(x_len as f64);
         }
 
-        let mut cost = 1;
-        if x[x_len - 1] == y[y_len - 1] {
-            cost = 0;
-        }
+        let cost = if x[x_len - 1] == y[y_len - 1] { 0 } else { 1 };
 
         Ok(min(
             min(
@@ -68,9 +65,11 @@ impl Recursive {
         T: Eq,
     {
         let distance = self.calc_distance(x, y);
-        match self.normalized {
-            false => distance,
-            true => distance.and_then(|dis| normalize(dis, x.len(), y.len())),
+
+        if self.normalized {
+            distance.and_then(|dis| normalize(dis, x.len(), y.len()))
+        } else {
+            distance
         }
     }
 }

@@ -33,18 +33,18 @@ impl DamerauLevenshtein1 {
 
         // source prefixes can be transformed into empty sequence by
         // dropping all elements
-        for i in 1..(y_len + 1) {
-            matrix[i][0] = i;
+        for (i, row) in matrix.iter_mut().enumerate().skip(1).take(y_len) {
+            row[0] = i;
         }
 
         // target prefixes can be reached from empty source prefix
         // by inserting every element
-        for j in 1..(x_len + 1) {
+        for j in 1..=x_len {
             matrix[0][j] = j;
         }
 
-        for i in 1..(x_len + 1) {
-            for j in 1..(y_len + 1) {
+        for i in 1..=x_len {
+            for j in 1..=y_len {
                 let cost = if x[i - 1] == y[j - 1] { 0 } else { 1 };
                 matrix[j][i] = min(
                     min(
@@ -78,9 +78,10 @@ impl DamerauLevenshtein1 {
         T: Eq,
     {
         let distance = self.calc_distance(x, y);
-        match self.normalized {
-            false => distance,
-            true => distance.and_then(|dis| normalize(dis, x.len(), y.len())),
+        if self.normalized {
+            distance.and_then(|dis| normalize(dis, x.len(), y.len()))
+        } else {
+            distance
         }
     }
 }
