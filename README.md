@@ -30,11 +30,11 @@ let y = [1, 2, 4];
 let distance = alg.distance(&x, &y).unwrap();
 assert_eq!(distance, 1.0);
 
-// With normaliztion (normalized distance = distance / x.len())
-let alg = levenshtein::Default::default().normalize_result(true);
+// With normalization (normalized distance = distance / x.len())
+let alg = levenshtein::Default::default();
 let x = [1, 2, 3];
 let y = [1, 2, 4];
-let distance = alg.distance(&x, &y).unwrap();
+let distance = alg.normalized_distance(&x, &y).unwrap();
 assert_eq!(distance, 1.0 / 3.0);
 
 // Use obviously algorithm (for example recursive version)

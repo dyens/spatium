@@ -1,5 +1,5 @@
+use crate::distance::Distance;
 use crate::error::SpatiumError;
-use crate::normalize::normalize;
 use std::cmp::Eq;
 
 use std::cmp::min;
@@ -11,19 +11,16 @@ type Result<T> = std::result::Result<T, SpatiumError>;
 /// Dont use it in real live!
 /// This is a straightforward, but inefficient, recursive
 /// implementation of a Levenshtein distance.
-pub struct Recursive {
-    /// Is result should be normalized?
-    normalized: bool,
-}
+pub struct Recursive {}
 
 impl Default for Recursive {
     fn default() -> Self {
-        Self { normalized: false }
+        Self {}
     }
 }
 
-impl Recursive {
-    fn calc_distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
+impl Distance for Recursive {
+    fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
     where
         T: Eq,
     {
@@ -40,43 +37,18 @@ impl Recursive {
 
         Ok(min(
             min(
-                self.calc_distance(&x[..x_len - 1], &y).unwrap() as u32 + 1,
-                self.calc_distance(&x, &y[..y_len - 1]).unwrap() as u32 + 1,
+                self.distance(&x[..x_len - 1], &y).unwrap() as u32 + 1,
+                self.distance(&x, &y[..y_len - 1]).unwrap() as u32 + 1,
             ),
-            self.calc_distance(&x[..x_len - 1], &y[..y_len - 1])
-                .unwrap() as u32
-                + cost,
+            self.distance(&x[..x_len - 1], &y[..y_len - 1]).unwrap() as u32 + cost,
         ) as f64)
-    }
-
-    /// Set normalization parameter
-    ///
-    /// If normailzed is True,
-    /// the distance is normalized by dividing it
-    /// by the lenght of sequence.
-    pub fn normalize_result(mut self, normalized: bool) -> Self {
-        self.normalized = normalized;
-        self
-    }
-
-    /// Distance between sequences
-    pub fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
-    where
-        T: Eq,
-    {
-        let distance = self.calc_distance(x, y);
-
-        if self.normalized {
-            distance.and_then(|dis| normalize(dis, x.len(), y.len()))
-        } else {
-            distance
-        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::Recursive;
+    use crate::distance::Distance;
 
     macro_rules! check_params {
 	($($name:ident: $value:expr,)*) => {
@@ -104,10 +76,7 @@ mod tests {
         let x = [1, 5, 3];
         let y = [4, 5, 6, 7];
 
-        let distance = Recursive::default()
-            .normalize_result(true)
-            .distance(&x, &y)
-            .unwrap();
+        let distance = Recursive::default().normalized_distance(&x, &y).unwrap();
         assert_eq!(distance, 3.0 / 4.0);
     }
 }
