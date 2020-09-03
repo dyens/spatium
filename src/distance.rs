@@ -1,3 +1,5 @@
+use crate::args::SpatiumIterator;
+use crate::args::SpatiumIteratorWithLen;
 use crate::error::SpatiumError;
 use std::cmp::max;
 
@@ -18,21 +20,52 @@ fn normalize(distance: f64, x_len: usize, y_len: usize) -> Result<f64> {
     Ok(distance / max_len)
 }
 
-/// Distance trait
-pub trait Distance {
+/// Distance trait on iterators
+pub trait IteratorsDistance {
     /// Distance between sequeces
-    fn distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
+    fn distance<T, U>(&self, x: T, y: T) -> Result<f64>
     where
-        T: Eq;
+        T: Into<SpatiumIterator<U>>,
+        U: std::iter::Iterator,
+        U::Item: std::cmp::Eq;
+}
+
+/// Distance trait on iterators with len
+pub trait IteratorsWithLenDistance {
+    /// Distance on spatium arguments
+    fn spatium_distance<T>(
+        &self,
+        x: SpatiumIteratorWithLen<T>,
+        y: SpatiumIteratorWithLen<T>,
+    ) -> Result<f64>
+    where
+        T: std::iter::Iterator,
+        T::Item: std::cmp::Eq;
+
+    /// Distance between sequeces
+    fn distance<T, U>(&self, x: T, y: T) -> Result<f64>
+    where
+        T: Into<SpatiumIteratorWithLen<U>>,
+        U: std::iter::Iterator,
+        U::Item: std::cmp::Eq,
+    {
+        let x = x.into();
+        let y = y.into();
+        self.spatium_distance(x, y)
+    }
 
     /// Normalized distance between sequeces
-    /// The distance is normalized by dividing it
-    /// by the greater of x_len or y_len (lenghths of sequeces).
-    fn normalized_distance<T>(&self, x: &[T], y: &[T]) -> Result<f64>
+    fn normalized_distance<T, U>(&self, x: T, y: T) -> Result<f64>
     where
-        T: Eq,
+        T: Into<SpatiumIteratorWithLen<U>>,
+        U: std::iter::Iterator,
+        U::Item: std::cmp::Eq,
     {
-        self.distance(&x, &y)
-            .and_then(|dis| normalize(dis, x.len(), y.len()))
+        let x = x.into();
+        let y = y.into();
+        let x_len = x.len();
+        let y_len = y.len();
+        let distance = self.spatium_distance(x, y)?;
+        normalize(distance, x_len, y_len)
     }
 }

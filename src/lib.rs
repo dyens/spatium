@@ -1,3 +1,4 @@
+#![feature(min_const_generics)]
 #![deny(missing_docs)]
 //! # Spatium
 //!
@@ -42,6 +43,9 @@
 /// # Distance trait
 pub mod distance;
 
+/// # Distance arguments trait
+pub mod args;
+
 /// # Edit Based algorithms
 pub mod edit_based;
 
@@ -50,5 +54,5 @@ pub mod error;
 
 /// # Prelude
 pub mod prelude {
-    pub use crate::distance::Distance;
+    pub use crate::distance::IteratorsDistance;
 }
