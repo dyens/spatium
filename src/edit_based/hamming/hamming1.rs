@@ -1,4 +1,4 @@
-use crate::args::SpatiumIteratorWithLen;
+use crate::core::SpatiumIteratorWithLen;
 use crate::distance::IteratorsWithLenDistance;
 use crate::error::SpatiumError;
 

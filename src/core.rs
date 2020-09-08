@@ -1,9 +1,8 @@
 use std::iter::ExactSizeIterator;
 
-// TODO: implement from for this struct
-// For algs with iterations and index accessing
-// For example x[0] == y[0]
-// Or some complex algs count(x[i] == y[y.len() - i])
+/// Spatium iterator
+///
+/// Argument with iterator support for spatium distances
 #[derive(Debug)]
 pub struct SpatiumIterator<T>
 where
@@ -19,7 +18,7 @@ where
 {
     fn from(obj: &'a [T; K]) -> Self {
         Self {
-            _iterator: obj.into_iter(),
+            _iterator: obj.iter(),
         }
     }
 }
@@ -46,14 +45,14 @@ where
 {
     fn from(obj: &'a Vec<T>) -> Self {
         Self {
-            _iterator: obj.into_iter(),
+            _iterator: obj.iter(),
         }
     }
 }
 
-// For algs with iterations and len
-// For example we can raise error in hamming if
-// lens not equals
+/// Spatium iterator with len
+///
+/// Argument with iterator with len support for spatium distances
 #[derive(Debug)]
 pub struct SpatiumIteratorWithLen<T> {
     _iterator: T,
@@ -88,7 +87,7 @@ where
 {
     fn from(obj: &'a [T; K]) -> Self {
         Self {
-            _iterator: obj.into_iter(),
+            _iterator: obj.iter(),
             _len: obj.len(),
         }
     }
@@ -118,16 +117,15 @@ where
 {
     fn from(obj: &'a Vec<T>) -> Self {
         Self {
-            _iterator: obj.into_iter(),
+            _iterator: obj.iter(),
             _len: obj.len(),
         }
     }
 }
 
-// TODO: implement from for this struct
-// For algs with iterations and index accessing
-// For example x[0] == y[0]
-// Or some complex algs count(x[i] == y[y.len() - i])
+/// Spatium vector
+///
+/// Argument with vector support for spatium distances
 #[derive(Debug)]
 pub struct SpatiumVector<T> {
     _iterator: Vec<T>,

@@ -43,8 +43,8 @@
 /// # Distance trait
 pub mod distance;
 
-/// # Distance arguments trait
-pub mod args;
+/// # Core structures
+pub mod core;
 
 /// # Edit Based algorithms
 pub mod edit_based;

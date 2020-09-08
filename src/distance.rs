@@ -1,5 +1,5 @@
-use crate::args::SpatiumIterator;
-use crate::args::SpatiumIteratorWithLen;
+use crate::core::SpatiumIterator;
+use crate::core::SpatiumIteratorWithLen;
 use crate::error::SpatiumError;
 use std::cmp::max;
 

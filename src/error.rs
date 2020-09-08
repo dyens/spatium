@@ -21,6 +21,7 @@ impl fmt::Display for SpatiumError {
 }
 
 impl error::Error for SpatiumError {
+    #[allow(clippy::match_single_binding)]
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             _ => None,
