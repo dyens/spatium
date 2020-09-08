@@ -15,11 +15,9 @@
 //! assert_eq!(distance, 1.0);
 //!
 //! // On &str.
-//! let x = "Hello-МИР";
-//! let y = "Hello-ПИР";
-//! let xc = x.chars().collect::<Vec<char>>();
-//! let yc = y.chars().collect::<Vec<char>>();
-//! let distance = alg.distance(&xc, &yc).unwrap();
+//! let x = "Hello";
+//! let y = "Hella";
+//! let distance = alg.distance(x, y).unwrap();
 //! assert_eq!(distance, 1.0);
 //!
 //! // With normalization (normalized distance = distance / x.len())

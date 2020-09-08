@@ -55,4 +55,5 @@ pub mod error;
 /// # Prelude
 pub mod prelude {
     pub use crate::distance::IteratorsDistance;
+    pub use crate::distance::IteratorsWithLenDistance;
 }
