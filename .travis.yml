@@ -1,12 +1,9 @@
 language: rust
 rust:
-  - stable
-  - beta
+# After stabilization of min const generics remove this comments
+#  - stable
+#  - beta
   - nightly
-jobs:
-  allow_failures:
-    - rust: nightly
-  fast_finish: true
 script:
   - cargo build --verbose --all
   - cargo test --verbose --all
