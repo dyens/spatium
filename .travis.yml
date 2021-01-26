@@ -1,4 +1,9 @@
 language: rust
+rust:
+# After stabilization of min const generics remove this comments
+#  - stable
+#  - beta
+  - nightly
 script:
   - cargo build --verbose --all
   - cargo test --verbose --all

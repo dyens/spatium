@@ -15,11 +15,9 @@
 //! assert_eq!(distance, 1.0);
 //!
 //! // On &str.
-//! let x = "Hello-МИР";
-//! let y = "Hello-ПИР";
-//! let xc = x.chars().collect::<Vec<char>>();
-//! let yc = y.chars().collect::<Vec<char>>();
-//! let distance = alg.distance(&xc, &yc).unwrap();
+//! let x = "Hello";
+//! let y = "Hella";
+//! let distance = alg.distance(x, y).unwrap();
 //! assert_eq!(distance, 1.0);
 //!
 //! // With normalization (normalized distance = distance / x.len())
@@ -35,9 +33,11 @@
 //! ## Some implementation
 //! - [python](https://github.com/chrislit/abydos/blob/master/abydos/distance/_hamming.py)
 
-/// Hamming1 algorithm
-pub mod hamming1;
-pub use hamming1::Hamming1;
+/// Hamming algorithm on iteartors
+pub mod on_iterators;
+/// Hamming algorithm on const size iteartors
+pub mod on_exact_size_iterators;
 
+pub use on_exact_size_iterators::Algorithm as DefaultHammingAlgorithm;
 /// Default algorithm
-pub type Default = Hamming1;
+pub type Default = DefaultHammingAlgorithm;
